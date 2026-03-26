@@ -1,23 +1,23 @@
 #!/bin/bash
 # ===================== PBS Resource Configuration (Do not modify) =====================
-#PBS -N bio_pathogen_match_1000
-#PBS -q fat
-#PBS -l nodes=node01.chess:ppn=200
+#PBS -N bio_pathogen_match_2000
+#PBS -q temp
+#PBS -l nodes=node05.chess:ppn=140
 #PBS -l walltime=200:00:00
-#PBS -o /data7/sunxiuqiang/nhp/Standard_Biometric_Information_Extraction/task_run_1000.log
-#PBS -e /data7/sunxiuqiang/nhp/Standard_Biometric_Information_Extraction/task_error_1000.log
+#PBS -o /data7/sunxiuqiang/nhp/Standard_Biometric_Information_Extraction/task_run_2000.log
+#PBS -e /data7/sunxiuqiang/nhp/Standard_Biometric_Information_Extraction/task_error_2000.log
 
 set -euo pipefail
 
 # ===================== Runtime Configuration =====================
 PROJECT_DIR="/data7/sunxiuqiang/nhp/Standard_Biometric_Information_Extraction"
-INPUT_FILE="${PROJECT_DIR}/biometric_extracted_result_1000.xlsx"
+INPUT_FILE="${PROJECT_DIR}/biometric_extracted_result_2000.xlsx"
 DICT_FILE="${PROJECT_DIR}/dict_pathogen_feature.xlsx"
 OUTPUT_DIR="${PROJECT_DIR}/outputs"
-OUTPUT_FILE="${OUTPUT_DIR}/biometric_extracted_result_1000_matched.xlsx"
-UNMATCHED_FILE="${OUTPUT_DIR}/unmatched_pathogen_old_1000.xlsx"
-CACHE_FILE="${OUTPUT_DIR}/llm_match_cache_1000.json"
-PIPELINE_LOG="${OUTPUT_DIR}/logs/pipeline_1000.log"
+OUTPUT_FILE="${OUTPUT_DIR}/biometric_extracted_result_2000_matched.xlsx"
+UNMATCHED_FILE="${OUTPUT_DIR}/unmatched_pathogen_old_2000.xlsx"
+CACHE_FILE="${OUTPUT_DIR}/llm_match_cache_2000.json"
+PIPELINE_LOG="${OUTPUT_DIR}/logs/pipeline_2000.log"
 
 # 1. Activate py39 environment
 source /data/homebackup/sunxiuqiang/tools/miniconda3/etc/profile.d/conda.sh
@@ -44,7 +44,7 @@ fi
 
 mkdir -p "${OUTPUT_DIR}/logs"
 
-echo "Running pathogen name standardization and dictionary mapping (1000 rows file)..."
+echo "Running pathogen name standardization and dictionary mapping (2000 rows file)..."
 echo "Output fields include: pathogen_name, pathogen, pathogen_rank_1, pathogen_rank_2"
 echo "Please ensure Clash is disabled before calling the DeepSeek-V3 service."
 
