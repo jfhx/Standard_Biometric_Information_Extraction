@@ -1,0 +1,69 @@
+#!/bin/bash
+# ===================== PBS Resource Configuration (Do not modify) =====================
+#PBS -N bio_pathogen_match_1000
+#PBS -q temp
+#PBS -l nodes=node05.chess:ppn=140
+#PBS -l walltime=200:00:00
+#PBS -o /data7/sunxiuqiang/nhp/Standard_Biometric_Information_Extraction/task_run_1000.log
+#PBS -e /data7/sunxiuqiang/nhp/Standard_Biometric_Information_Extraction/task_error_1000.log
+
+set -euo pipefail
+
+# ===================== Runtime Configuration =====================
+PROJECT_DIR="/data7/sunxiuqiang/nhp/Standard_Biometric_Information_Extraction"
+INPUT_FILE="${PROJECT_DIR}/biometric_extracted_result_1000.xlsx"
+DICT_FILE="${PROJECT_DIR}/dict_pathogen_feature.xlsx"
+OUTPUT_DIR="${PROJECT_DIR}/outputs"
+OUTPUT_FILE="${OUTPUT_DIR}/biometric_extracted_result_1000_matched.xlsx"
+UNMATCHED_FILE="${OUTPUT_DIR}/unmatched_pathogen_old_1000.xlsx"
+CACHE_FILE="${OUTPUT_DIR}/llm_match_cache_1000.json"
+PIPELINE_LOG="${OUTPUT_DIR}/logs/pipeline_1000.log"
+
+# 1. Activate py39 environment
+source /data/homebackup/sunxiuqiang/tools/miniconda3/etc/profile.d/conda.sh
+conda activate py39
+
+# 2. Enter project directory
+cd "${PROJECT_DIR}" || exit 1
+
+# 3. Check required files
+if [ ! -f "${INPUT_FILE}" ]; then
+    echo "Error: Input file does not exist: ${INPUT_FILE}"
+    exit 1
+fi
+
+if [ ! -f "${DICT_FILE}" ]; then
+    echo "Error: Dictionary file does not exist: ${DICT_FILE}"
+    exit 1
+fi
+
+if [ ! -f "${PROJECT_DIR}/main.py" ]; then
+    echo "Error: main.py does not exist in project directory"
+    exit 1
+fi
+
+mkdir -p "${OUTPUT_DIR}/logs"
+
+echo "Running pathogen name standardization and dictionary mapping (1000 rows file)..."
+echo "Output fields include: pathogen_name, pathogen, pathogen_rank_1, pathogen_rank_2"
+echo "Please ensure Clash is disabled before calling the DeepSeek-V3 service."
+
+# 4. Run Python script (\ must be the LAST character of each line, NO SPACES AFTER \)
+python main.py \
+--input-path "${INPUT_FILE}" \
+--dict-path "${DICT_FILE}" \
+--output-path "${OUTPUT_FILE}" \
+--unmatched-path "${UNMATCHED_FILE}" \
+--cache-path "${CACHE_FILE}" \
+--log-path "${PIPELINE_LOG}" \
+--model-url "http://159.226.80.101:1045/v1/chat/completions" \
+--model-name "DeepSeek-V3" \
+--timeout-seconds 600 \
+--max-retries 3 \
+--candidate-limit 25
+
+echo "Matched Excel output: ${OUTPUT_FILE}"
+echo "Unmatched pathogen_old summary: ${UNMATCHED_FILE}"
+echo "Cache file: ${CACHE_FILE}"
+echo "Pipeline log: ${PIPELINE_LOG}"
+echo "PBS job completed successfully."
