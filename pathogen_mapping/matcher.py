@@ -94,6 +94,8 @@ class PathogenMatcher:
             unmatched_path,
         )
         return {
+            "total_rows": int(len(output_df)),
+            "unique_original_pathogens": int(len(unique_values)),
             "matched_rows": matched_count,
             "unmatched_rows": unmatched_count,
             "unique_unmatched_values": int(len(unmatched_df)),

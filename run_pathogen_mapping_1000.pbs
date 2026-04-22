@@ -18,6 +18,7 @@ OUTPUT_FILE="${OUTPUT_DIR}/biometric_extracted_result_1000_matched.xlsx"
 UNMATCHED_FILE="${OUTPUT_DIR}/unmatched_pathogen_old_1000.xlsx"
 CACHE_FILE="${OUTPUT_DIR}/llm_match_cache_1000.json"
 PIPELINE_LOG="${OUTPUT_DIR}/logs/pipeline_1000.log"
+STATUS_TABLE_FILE="${OUTPUT_DIR}/pathogen_match_status_1000.xlsx"
 
 # 1. Activate py39 environment
 source /data/homebackup/sunxiuqiang/tools/miniconda3/etc/profile.d/conda.sh
@@ -45,8 +46,9 @@ fi
 mkdir -p "${OUTPUT_DIR}/logs"
 
 echo "Running pathogen name standardization and dictionary mapping (1000 rows file)..."
-echo "Output fields include: pathogen_name, pathogen, pathogen_rank_1, pathogen_rank_2"
+echo "Output fields include: pathogen_name, pathogen_alias, pathogen, pathogen_rank_1, pathogen_rank_2"
 echo "Please ensure Clash is disabled before calling the DeepSeek-V3 service."
+echo "Status table will be written to: ${STATUS_TABLE_FILE}"
 
 # 4. Run Python script (\ must be the LAST character of each line, NO SPACES AFTER \)
 python main.py \
@@ -56,6 +58,7 @@ python main.py \
 --unmatched-path "${UNMATCHED_FILE}" \
 --cache-path "${CACHE_FILE}" \
 --log-path "${PIPELINE_LOG}" \
+--status-table-path "${STATUS_TABLE_FILE}" \
 --model-url "http://159.226.80.101:1045/v1/chat/completions" \
 --model-name "DeepSeek-V3" \
 --timeout-seconds 600 \
@@ -66,4 +69,5 @@ echo "Matched Excel output: ${OUTPUT_FILE}"
 echo "Unmatched pathogen_old summary: ${UNMATCHED_FILE}"
 echo "Cache file: ${CACHE_FILE}"
 echo "Pipeline log: ${PIPELINE_LOG}"
+echo "Status table: ${STATUS_TABLE_FILE}"
 echo "PBS job completed successfully."
